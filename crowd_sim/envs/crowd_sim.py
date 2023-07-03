@@ -427,7 +427,7 @@ class CrowdSim(gym.Env):
         x_offset = 0.11
         y_offset = 0.11
         cmap = plt.cm.get_cmap('hsv', 10)
-        robot_color = 'yellow'
+        robot_color = 'blue'
         goal_color = 'red'
         arrow_color = 'red'
         arrow_style = patches.ArrowStyle("->", head_length=4, head_width=2)
@@ -444,8 +444,8 @@ class CrowdSim(gym.Env):
         elif mode == 'traj':
             fig, ax = plt.subplots(figsize=(7, 7))
             ax.tick_params(labelsize=16)
-            ax.set_xlim(-5, 5)
-            ax.set_ylim(-5, 5)
+            ax.set_xlim(-6, 6)
+            ax.set_ylim(-6, 6)
             ax.set_xlabel('x(m)', fontsize=16)
             ax.set_ylabel('y(m)', fontsize=16)
 
@@ -481,7 +481,10 @@ class CrowdSim(gym.Env):
                     for human_direction in human_directions:
                         ax.add_artist(human_direction)
             plt.legend([robot], ['Robot'], fontsize=16)
-            plt.show()
+            if output_file is not None:
+                plt.savefig(output_file)
+            else:
+                plt.show()
         elif mode == 'video':
             fig, ax = plt.subplots(figsize=(7, 7))
             ax.tick_params(labelsize=16)
@@ -492,7 +495,7 @@ class CrowdSim(gym.Env):
 
             # add robot and its goal
             robot_positions = [state[0].position for state in self.states]
-            goal = mlines.Line2D([0], [4], color=goal_color, marker='*', linestyle='None', markersize=15, label='Goal')
+            goal = mlines.Line2D([self.states[0][0].gx], [self.states[0][0].gy], color=goal_color, marker='*', linestyle='None', markersize=15, label='Goal')
             robot = plt.Circle(robot_positions[0], self.robot.radius, fill=True, color=robot_color)
             ax.add_artist(robot)
             ax.add_artist(goal)

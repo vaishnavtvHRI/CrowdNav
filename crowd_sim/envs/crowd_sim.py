@@ -316,7 +316,8 @@ class CrowdSim(gym.Env):
         return ob
 
     def onestep_lookahead(self, action):
-        return self.step(action, update=False)
+        actions = list(); actions.append(action)
+        return self.step(actions, update=False)
 
     def step(self, action, update=True):
         """

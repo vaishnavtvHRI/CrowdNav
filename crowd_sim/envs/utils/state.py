@@ -42,7 +42,7 @@ class ObservableState(object):
 
 class JointState(object):
     def __init__(self, self_state, human_states):
-        assert isinstance(self_state, FullState)
+        assert (isinstance(self_state, FullState) or all([isinstance(state, FullState) for state in self_state]))
         for human_state in human_states:
             assert isinstance(human_state, ObservableState)
 

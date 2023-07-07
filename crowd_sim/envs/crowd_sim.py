@@ -7,8 +7,7 @@ from matplotlib import patches
 from numpy.linalg import norm
 from crowd_sim.envs.utils.human import Human
 from crowd_sim.envs.utils.info import *
-from crowd_sim.envs.utils.utils import point_to_segment_dist
-
+from crowd_sim.envs.utils.utils import *
 
 class CrowdSim(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -180,7 +179,7 @@ class CrowdSim(gym.Env):
         human.set(px, py, -px, -py, 0, 0, 0)
         return human
 
-    def generate_square_crossing_human(self):
+    def generate_random_crossing_human(self):
         human = Human(self.config, 'humans')
         if self.randomize_attributes:
             human.sample_random_attributes()
@@ -201,6 +200,68 @@ class CrowdSim(gym.Env):
         while True:
             gx = np.random.random() * self.square_width * 0.5 * -sign
             gy = (np.random.random() - 0.5) * self.square_width
+            collide = False
+            for agent in self.robot + self.humans:
+                if norm((gx - agent.gx, gy - agent.gy)) < human.radius + agent.radius + self.discomfort_dist:
+                    collide = True
+                    break
+            if not collide:
+                break
+        human.set(px, py, gx, gy, 0, 0, 0)
+        return human
+
+    def generate_square_crossing_human(self):
+        human = Human(self.config, 'humans')
+        if self.randomize_attributes:
+            human.sample_random_attributes()
+        if np.random.random() > 0.5:
+            sign = -1
+        else:
+            sign = 1
+        while True:
+            px = np.random.uniform(0.8, 1) * self.square_width * 0.5 * sign
+            py = (np.random.random() - 0.5) * self.square_width
+            collide = False
+            for agent in self.robot + self.humans:
+                if norm((px - agent.px, py - agent.py)) < human.radius + agent.radius + self.discomfort_dist:
+                    collide = True
+                    break
+            if not collide:
+                break
+        while True:
+            gx = -px + (np.random.random() - 0.5) # np.random.random() * self.square_width * 0.5 * -sign
+            gy = py + (np.random.random() - 0.5) # (np.random.random() - 0.5) * self.square_width
+            collide = False
+            for agent in self.robot + self.humans:
+                if norm((gx - agent.gx, gy - agent.gy)) < human.radius + agent.radius + self.discomfort_dist:
+                    collide = True
+                    break
+            if not collide:
+                break
+        human.set(px, py, gx, gy, 0, 0, 0)
+        return human
+
+    def generate_square_crossing_human(self):
+        human = Human(self.config, 'humans')
+        if self.randomize_attributes:
+            human.sample_random_attributes()
+        if np.random.random() > 0.5:
+            sign = -1
+        else:
+            sign = 1
+        while True:
+            px = np.random.uniform(0.5, 1) * self.square_width * 0.5 * sign
+            py = (np.random.random() - 0.5) * self.square_width
+            collide = False
+            for agent in self.robot + self.humans:
+                if norm((px - agent.px, py - agent.py)) < human.radius + agent.radius + self.discomfort_dist:
+                    collide = True
+                    break
+            if not collide:
+                break
+        while True:
+            gx = -px + np.random.random() - 0.5 # np.random.random() * self.square_width * 0.5 * -sign
+            gy = py + np.random.random() - 0.5 # (np.random.random() - 0.5) * self.square_width
             collide = False
             for agent in self.robot + self.humans:
                 if norm((gx - agent.gx, gy - agent.gy)) < human.radius + agent.radius + self.discomfort_dist:
@@ -331,6 +392,18 @@ class CrowdSim(gym.Env):
             ob += [robot.get_observable_state() for robot in self.robot if robot.visible]
             human_actions.append(human.act(ob))
 
+        # Check comfort 
+        discomfort = False; rho = 1.0
+        for i, human in enumerate(self.humans):
+            for j, robot in enumerate(self.robot):
+                ph1 = [human.px, human.py]
+                ph2 = [human.px + rho*human.vx, human.py + rho*human.vy]
+                pr1 = [robot.px, robot.py]
+                pr2 = [robot.px + rho*robot.vx, robot.py + rho*robot.vy]
+                if intersect(ph1, ph2, pr1, pr2):
+                    discomfort = True
+                    break
+
         # collision detection
         dmin = float('inf')
         collision = False
@@ -388,6 +461,11 @@ class CrowdSim(gym.Env):
             reward = (dmin - self.discomfort_dist) * self.discomfort_penalty_factor * self.time_step
             done = False
             info = Danger(dmin)
+        elif discomfort:
+            # "preojected paths" intersects
+            reward = 0
+            done = False
+            info = Discomfort()
         else:
             reward = 0
             done = False

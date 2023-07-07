@@ -21,6 +21,12 @@ class Danger(object):
     def __str__(self):
         return 'Too close'
 
+class Discomfort(object):
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        return 'Not socially comfortable'
 
 class Collision(object):
     def __init__(self):

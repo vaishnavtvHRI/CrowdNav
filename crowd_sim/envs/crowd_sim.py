@@ -172,7 +172,7 @@ class CrowdSim(gym.Env):
             for agent in self.robot + self.humans:
                 min_dist = human.radius + agent.radius + self.discomfort_dist
                 if norm((px - agent.px, py - agent.py)) < min_dist or \
-                        norm((px - agent.gx, py - agent.gy)) < min_dist:
+                        norm((-px - agent.gx, -py - agent.gy)) < min_dist:
                     collide = True
                     break
             if not collide:
@@ -376,7 +376,7 @@ class CrowdSim(gym.Env):
             info = Timeout()
         elif collision:
             reward = self.collision_penalty
-            done = True
+            done = False # True
             info = Collision()
         elif all(reaching_goal):
             reward = self.success_reward
@@ -615,7 +615,7 @@ class CrowdSim(gym.Env):
                     anim.event_source.start()
 
             fig.canvas.mpl_connect('key_press_event', on_click)
-            anim = animation.FuncAnimation(fig, update, frames=len(self.states), interval=self.time_step * 1000)
+            anim = animation.FuncAnimation(fig, update, frames=len(self.states), interval=self.time_step * 500)
             anim.running = True
 
             if output_file is not None:

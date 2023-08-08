@@ -219,7 +219,7 @@ class CrowdSim(gym.Env):
         else:
             sign = 1
         while True:
-            px = np.random.uniform(0.8, 1) * self.square_width * 0.5 * sign
+            px = np.random.uniform(0.75, 1.0) * self.square_width * 0.5 * sign
             py = (np.random.random() - 0.5) * self.square_width
             collide = False
             for agent in self.robot + self.humans:
@@ -229,39 +229,8 @@ class CrowdSim(gym.Env):
             if not collide:
                 break
         while True:
-            gx = -px + (np.random.random() - 0.5) # np.random.random() * self.square_width * 0.5 * -sign
-            gy = py + (np.random.random() - 0.5) # (np.random.random() - 0.5) * self.square_width
-            collide = False
-            for agent in self.robot + self.humans:
-                if norm((gx - agent.gx, gy - agent.gy)) < human.radius + agent.radius + self.discomfort_dist:
-                    collide = True
-                    break
-            if not collide:
-                break
-        human.set(px, py, gx, gy, 0, 0, 0)
-        return human
-
-    def generate_square_crossing_human(self):
-        human = Human(self.config, 'humans')
-        if self.randomize_attributes:
-            human.sample_random_attributes()
-        if np.random.random() > 0.5:
-            sign = -1
-        else:
-            sign = 1
-        while True:
-            px = np.random.uniform(0.5, 1) * self.square_width * 0.5 * sign
-            py = (np.random.random() - 0.5) * self.square_width
-            collide = False
-            for agent in self.robot + self.humans:
-                if norm((px - agent.px, py - agent.py)) < human.radius + agent.radius + self.discomfort_dist:
-                    collide = True
-                    break
-            if not collide:
-                break
-        while True:
-            gx = -px + np.random.random() - 0.5 # np.random.random() * self.square_width * 0.5 * -sign
-            gy = py + np.random.random() - 0.5 # (np.random.random() - 0.5) * self.square_width
+            gx = -px + 2*(np.random.random() - 0.5) # np.random.random() * self.square_width * 0.5 * -sign
+            gy = py + 2*(np.random.random() - 0.5) # (np.random.random() - 0.5) * self.square_width
             collide = False
             for agent in self.robot + self.humans:
                 if norm((gx - agent.gx, gy - agent.gy)) < human.radius + agent.radius + self.discomfort_dist:

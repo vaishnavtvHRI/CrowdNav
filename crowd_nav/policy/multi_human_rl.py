@@ -162,3 +162,22 @@ class MultiHumanRL(CADRL):
 
         return torch.from_numpy(np.concatenate(occupancy_maps, axis=0)).float()
 
+class MultiHumanPolicy(MultiHumanRL):
+
+    def __init__(self):
+        super().__init__()
+
+    def predict(self, state):
+        if self.phase is None or self.device is None:
+            raise AttributeError('Phase, device attributes have to be set!')
+        if self.phase == 'train' and self.epsilon is None:
+            raise AttributeError('Epsilon attribute has to be set in training phase')
+
+        if self.reach_destination(state):
+            return ActionXY(0, 0) if self.kinematics == 'holonomic' else ActionRot(0, 0)
+
+        self.last_state = self.transform(state)
+        
+        action = self.model(self.last_state.unsqueeze(0)).squeeze()
+
+        return ActionXY(action[0].item(), action[1].item()) if self.kinematics == 'holonomic' else ActionRot(action[0].item(), action[1].item())

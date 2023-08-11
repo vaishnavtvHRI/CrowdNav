@@ -169,7 +169,7 @@ class CrowdSim(gym.Env):
             py = self.circle_radius * np.sin(angle) + py_noise
             collide = False
             for agent in self.robot + self.humans:
-                min_dist = human.radius + agent.radius + self.discomfort_dist
+                min_dist = human.radius + agent.radius + self.discomfort_dist + 0.1
                 if norm((px - agent.px, py - agent.py)) < min_dist or \
                         norm((-px - agent.gx, -py - agent.gy)) < min_dist:
                     collide = True
@@ -192,7 +192,7 @@ class CrowdSim(gym.Env):
             py = (np.random.random() - 0.5) * self.square_width
             collide = False
             for agent in self.robot + self.humans:
-                if norm((px - agent.px, py - agent.py)) < human.radius + agent.radius + self.discomfort_dist:
+                if norm((px - agent.px, py - agent.py)) < human.radius + agent.radius + self.discomfort_dist + 0.1:
                     collide = True
                     break
             if not collide:
@@ -202,7 +202,7 @@ class CrowdSim(gym.Env):
             gy = (np.random.random() - 0.5) * self.square_width
             collide = False
             for agent in self.robot + self.humans:
-                if norm((gx - agent.gx, gy - agent.gy)) < human.radius + agent.radius + self.discomfort_dist:
+                if norm((gx - agent.gx, gy - agent.gy)) < human.radius + agent.radius + self.discomfort_dist + 0.1:
                     collide = True
                     break
             if not collide:
@@ -223,17 +223,17 @@ class CrowdSim(gym.Env):
             py = (np.random.random() - 0.5) * self.square_width
             collide = False
             for agent in self.robot + self.humans:
-                if norm((px - agent.px, py - agent.py)) < human.radius + agent.radius + self.discomfort_dist:
+                if norm((px - agent.px, py - agent.py)) < human.radius + agent.radius + self.discomfort_dist + 0.1:
                     collide = True
                     break
             if not collide:
                 break
         while True:
-            gx = -px + 2*(np.random.random() - 0.5) # np.random.random() * self.square_width * 0.5 * -sign
-            gy = py + 2*(np.random.random() - 0.5) # (np.random.random() - 0.5) * self.square_width
+            gx = -px + (np.random.random() - 0.5) # np.random.random() * self.square_width * 0.5 * -sign
+            gy = py + (np.random.random() - 0.5) # (np.random.random() - 0.5) * self.square_width
             collide = False
             for agent in self.robot + self.humans:
-                if norm((gx - agent.gx, gy - agent.gy)) < human.radius + agent.radius + self.discomfort_dist:
+                if norm((gx - agent.gx, gy - agent.gy)) < human.radius + agent.radius + self.discomfort_dist + 0.1:
                     collide = True
                     break
             if not collide:
@@ -497,8 +497,8 @@ class CrowdSim(gym.Env):
         elif mode == 'traj':
             fig, ax = plt.subplots(figsize=(7, 7))
             ax.tick_params(labelsize=16)
-            ax.set_xlim(-6, 6)
-            ax.set_ylim(-6, 6)
+            ax.set_xlim(-7, 7)
+            ax.set_ylim(-7, 7)
             ax.set_xlabel('x(m)', fontsize=16)
             ax.set_ylabel('y(m)', fontsize=16)
 
@@ -546,8 +546,9 @@ class CrowdSim(gym.Env):
         elif mode == 'video':
             fig, ax = plt.subplots(figsize=(7, 7))
             ax.tick_params(labelsize=16)
-            ax.set_xlim(-6, 6)
-            ax.set_ylim(-6, 6)
+
+            ax.set_xlim(-7, 7)
+            ax.set_ylim(-7, 7)
             ax.set_xlabel('x(m)', fontsize=16)
             ax.set_ylabel('y(m)', fontsize=16)
 

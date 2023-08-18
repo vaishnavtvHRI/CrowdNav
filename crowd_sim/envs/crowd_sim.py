@@ -208,7 +208,7 @@ class CrowdSim(gym.Env):
             if not collide:
                 break
         human.set(px, py, gx, gy, 0, 0, 0)
-        return human
+        return human 
 
     def generate_square_crossing_human(self):
         human = Human(self.config, 'humans')
@@ -218,17 +218,22 @@ class CrowdSim(gym.Env):
             sign = -1
         else:
             sign = 1
+        idx = 0 # to avoid the below while loop going fovever
         while True:
-            px = np.random.uniform(0.75, 1.0) * self.square_width * 0.5 * sign
+            idx += 1
+            px = np.random.uniform(1.0, 1.2) * self.square_width * 0.5 * sign
             py = (np.random.random() - 0.5) * self.square_width
             collide = False
             for agent in self.robot + self.humans:
                 if norm((px - agent.px, py - agent.py)) < human.radius + agent.radius + self.discomfort_dist + 0.1:
                     collide = True
                     break
-            if not collide:
+            if (not collide) or idx >= 100:
                 break
+
+        idx = 0 # to avoid the below while loop going fovever
         while True:
+            idx += 1
             gx = -px + (np.random.random() - 0.5) # np.random.random() * self.square_width * 0.5 * -sign
             gy = py + (np.random.random() - 0.5) # (np.random.random() - 0.5) * self.square_width
             collide = False
@@ -236,7 +241,7 @@ class CrowdSim(gym.Env):
                 if norm((gx - agent.gx, gy - agent.gy)) < human.radius + agent.radius + self.discomfort_dist + 0.1:
                     collide = True
                     break
-            if not collide:
+            if (not collide) or idx >= 100:
                 break
         human.set(px, py, gx, gy, 0, 0, 0)
         return human
@@ -362,7 +367,7 @@ class CrowdSim(gym.Env):
             human_actions.append(human.act(ob))
 
         # Check comfort 
-        discomfort = False; rho = 1.0
+        discomfort = False; rho = 1.2
         for i, human in enumerate(self.humans):
             for j, robot in enumerate(self.robot):
                 ph1 = [human.px, human.py]

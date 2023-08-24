@@ -19,5 +19,6 @@ class Linear(Policy):
         vx = np.cos(theta) * self_state.v_pref
         vy = np.sin(theta) * self_state.v_pref
         action = ActionXY(vx, vy)
+        print("Dit me chung may")
 
         return action

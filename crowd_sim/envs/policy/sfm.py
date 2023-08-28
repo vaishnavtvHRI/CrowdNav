@@ -43,7 +43,7 @@ class SFM(Policy):
             # initiate the simulator, hardcode the config file for now
             self.sim = psf.Simulator(
                 initial_state,
-                config_file="/home/vale/github/mpc-nav/PySocialForce/examples/example.toml",
+                config_file="/home/vale/github/mpc-nav/PySocialForce/pysocialforce/config/default.toml",
             )
         else:
             initial_state = np.array(
